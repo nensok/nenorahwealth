@@ -18,6 +18,23 @@ const MAPPING = {
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
   'chevron.right': 'chevron-right',
+  // Fintech tab icons
+  'chart.pie.fill': 'pie-chart',
+  'arrow.down.circle.fill': 'arrow-downward',
+  'arrow.up.circle.fill': 'arrow-upward',
+  'chart.line.uptrend.xyaxis': 'trending-up',
+  'gearshape.fill': 'settings',
+  // UI icons
+  'plus': 'add',
+  'trash': 'delete',
+  'pencil': 'edit',
+  'chevron.left': 'chevron-left',
+  'xmark': 'close',
+  'checkmark': 'check',
+  'lock.fill': 'lock',
+  'arrow.up.doc.fill': 'upload-file',
+  'arrow.down.doc.fill': 'download',
+  'square.and.arrow.up': 'share',
 } as IconMapping;
 
 /**
