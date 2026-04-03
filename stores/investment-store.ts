@@ -6,17 +6,26 @@ import {
   updateInvestment,
   deleteInvestment,
 } from '@/lib/db/queries/investments';
+import {
+  getTransactionsByInvestment,
+  insertInvestmentTransaction,
+  deleteInvestmentTransaction,
+} from '@/lib/db/queries/investment-transactions';
 import { enrichInvestment } from '@/lib/utils/calculations';
-import type { Investment, InvestmentWithPnL } from '@/types';
+import type { Investment, InvestmentTransaction, InvestmentWithPnL } from '@/types';
 
 interface InvestmentState {
   positions: Investment[];
+  transactions: Record<number, InvestmentTransaction[]>;
   isLoading: boolean;
 
   load: () => Promise<void>;
   add: (data: Omit<Investment, 'id' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   update: (id: number, data: Partial<Omit<Investment, 'id' | 'createdAt' | 'updatedAt'>>) => Promise<void>;
   remove: (id: number) => Promise<void>;
+  loadTransactions: (investmentId: number) => Promise<void>;
+  addTransaction: (data: Omit<InvestmentTransaction, 'id' | 'createdAt'>) => Promise<void>;
+  removeTransaction: (txId: number, investmentId: number) => Promise<void>;
   getTotalPortfolioValue: () => number;
   getTotalProfitLoss: () => number;
   getEnrichedPositions: () => InvestmentWithPnL[];
@@ -24,6 +33,7 @@ interface InvestmentState {
 
 export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   positions: [],
+  transactions: {},
   isLoading: false,
 
   load: async () => {
@@ -50,7 +60,30 @@ export const useInvestmentStore = create<InvestmentState>((set, get) => ({
   remove: async (id) => {
     const db = await getDb();
     await deleteInvestment(db, id);
-    set({ positions: get().positions.filter((p) => p.id !== id) });
+    const { transactions } = get();
+    const newTx = { ...transactions };
+    delete newTx[id];
+    set({ positions: get().positions.filter((p) => p.id !== id), transactions: newTx });
+  },
+
+  loadTransactions: async (investmentId) => {
+    const db = await getDb();
+    const txs = await getTransactionsByInvestment(db, investmentId);
+    set({ transactions: { ...get().transactions, [investmentId]: txs } });
+  },
+
+  addTransaction: async (data) => {
+    const db = await getDb();
+    await insertInvestmentTransaction(db, data);
+    const txs = await getTransactionsByInvestment(db, data.investmentId);
+    set({ transactions: { ...get().transactions, [data.investmentId]: txs } });
+  },
+
+  removeTransaction: async (txId, investmentId) => {
+    const db = await getDb();
+    await deleteInvestmentTransaction(db, txId);
+    const txs = await getTransactionsByInvestment(db, investmentId);
+    set({ transactions: { ...get().transactions, [investmentId]: txs } });
   },
 
   getTotalPortfolioValue: () => {

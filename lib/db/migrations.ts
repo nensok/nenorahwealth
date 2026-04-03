@@ -2,11 +2,14 @@ import { DEFAULT_CATEGORIES } from "@/constants/categories";
 import type { SQLiteDatabase } from "expo-sqlite";
 import {
   CURRENT_SCHEMA_VERSION,
+  SQL_BUDGETS,
   SQL_CATEGORIES,
   SQL_EXPENSES,
   SQL_INCOME,
   SQL_INDEXES,
   SQL_INVESTMENTS,
+  SQL_INVESTMENT_TRANSACTIONS,
+  SQL_RECURRING,
   SQL_SCHEMA_VERSION,
   SQL_SETTINGS,
 } from "./schema";
@@ -51,6 +54,23 @@ export async function runMigrations(db: SQLiteDatabase): Promise<void> {
     } catch {
       // Column may already exist on fresh installs — safe to ignore
     }
+  }
+
+  // ── v3 → v4: budgets table ────────────────────────────────────────────────
+  if (currentVersion < 4) {
+    await db.execAsync(SQL_BUDGETS);
+    await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_budgets_year_month ON budgets(year, month)`);
+  }
+
+  // ── v4 → v5: recurring transactions ──────────────────────────────────────
+  if (currentVersion < 5) {
+    await db.execAsync(SQL_RECURRING);
+  }
+
+  // ── v5 → v6: investment transactions ─────────────────────────────────────
+  if (currentVersion < 6) {
+    await db.execAsync(SQL_INVESTMENT_TRANSACTIONS);
+    await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_inv_tx_investment ON investment_transactions(investment_id)`);
   }
 
   // Stamp the new version (clear any stale rows first)

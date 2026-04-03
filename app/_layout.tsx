@@ -8,6 +8,7 @@ import 'react-native-reanimated';
 
 import { useAppStore } from '@/stores/app-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { useRecurringStore } from '@/stores/recurring-store';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,6 +22,7 @@ export default function RootLayout() {
 
   const checkPinExists = useAuthStore((s) => s.checkPinExists);
   const isPinSet = useAuthStore((s) => s.isPinSet);
+  const processRecurring = useRecurringStore((s) => s.processDue);
 
   const didInit = useRef(false);
   useEffect(() => {
@@ -30,6 +32,8 @@ export default function RootLayout() {
       await initializeDb();
       await loadSettings();
       await checkPinExists();
+      // Auto-generate any overdue recurring transactions
+      await processRecurring();
     }
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,7 +64,9 @@ export default function RootLayout() {
         <Stack.Screen name="expenses" />
         <Stack.Screen name="investments" />
         <Stack.Screen name="categories" />
-        <Stack.Screen name="export" options={{ headerShown: true, title: 'Export to Excel', presentation: 'modal' }} />
+        <Stack.Screen name="budgets" />
+        <Stack.Screen name="recurring" />
+        <Stack.Screen name="export" options={{ headerShown: true, title: 'Export Report', presentation: 'modal' }} />
         <Stack.Screen name="backup" options={{ headerShown: true, title: 'Backup & Restore', presentation: 'modal' }} />
       </Stack>
       <StatusBar style="light" backgroundColor="#0A0A0A" />

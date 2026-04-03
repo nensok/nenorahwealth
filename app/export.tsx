@@ -8,23 +8,36 @@ import { useColors } from '@/hooks/use-colors';
 import { useAppStore } from '@/stores/app-store';
 import { getCurrentMonthYear } from '@/lib/utils/date';
 import { exportMonthlyExcel } from '@/lib/export/excel';
+import { exportMonthlyPdf } from '@/lib/export/pdf';
 
 export default function ExportScreen() {
   const colors = useColors();
   const { month: currentMonth, year: currentYear } = getCurrentMonthYear();
   const [month, setMonth] = useState(currentMonth);
   const [year, setYear] = useState(currentYear);
-  const [loading, setLoading] = useState(false);
+  const [excelLoading, setExcelLoading] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
   const currency = useAppStore((s) => s.settings?.currencySymbol ?? '₦');
 
-  async function handleExport() {
-    setLoading(true);
+  async function handleExportExcel() {
+    setExcelLoading(true);
     try {
       await exportMonthlyExcel(month, year, currency);
     } catch (e) {
       Alert.alert('Export Failed', String(e));
     } finally {
-      setLoading(false);
+      setExcelLoading(false);
+    }
+  }
+
+  async function handleExportPdf() {
+    setPdfLoading(true);
+    try {
+      await exportMonthlyPdf(month, year, currency);
+    } catch (e) {
+      Alert.alert('Export Failed', String(e));
+    } finally {
+      setPdfLoading(false);
     }
   }
 
@@ -41,14 +54,22 @@ export default function ExportScreen() {
           <Text style={[styles.info, { color: colors.muted }]}>
             • Income records for the selected month{'\n'}
             • Expense records with categories{'\n'}
-            • Summary: total income, expenses & balance
+            • Summary: total income, expenses & balance{'\n'}
+            • Spending breakdown by category (PDF)
           </Text>
         </Card>
 
         <Button
           label="Export to Excel (.xlsx)"
-          onPress={handleExport}
-          loading={loading}
+          onPress={handleExportExcel}
+          loading={excelLoading}
+        />
+
+        <Button
+          label="Export to PDF"
+          variant="secondary"
+          onPress={handleExportPdf}
+          loading={pdfLoading}
         />
       </View>
     </SafeAreaView>

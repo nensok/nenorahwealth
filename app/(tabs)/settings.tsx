@@ -124,8 +124,10 @@ export default function SettingsScreen() {
         {/* Data section */}
         <Text style={[styles.sectionLabel, { color: colors.muted }]}>DATA MANAGEMENT</Text>
         <View style={styles.group}>
+          <SettingsRow icon="account-balance" label="Budgets" onPress={() => router.push('/budgets')} />
+          <SettingsRow icon="repeat" label="Recurring Transactions" onPress={() => router.push('/recurring')} />
           <SettingsRow icon="category" label="Categories" onPress={() => router.push('/categories')} />
-          <SettingsRow icon="file-download" label="Export to Excel" onPress={() => router.push('/export')} />
+          <SettingsRow icon="file-download" label="Export Report" onPress={() => router.push('/export')} />
           <SettingsRow icon="backup" label="Backup & Restore" onPress={() => router.push('/backup')} />
         </View>
 

@@ -6,6 +6,7 @@ import {
   updateExpense,
   deleteExpense,
   getMonthlyExpenseTotals,
+  getCategorySpendByMonths,
 } from '@/lib/db/queries/expenses';
 import type { Expense } from '@/types';
 
@@ -20,6 +21,7 @@ interface ExpenseState {
   getMonthlyTotal: () => number;
   getByCategory: (categoryId: number) => Expense[];
   fetchMonthlyTotals: (months: Array<{ month: number; year: number }>) => Promise<Array<{ month: number; year: number; total: number }>>;
+  fetchCategorySpendByMonths: (months: Array<{ month: number; year: number }>) => Promise<Array<{ categoryId: number; month: number; year: number; total: number }>>;
 }
 
 export const useExpenseStore = create<ExpenseState>((set, get) => ({
@@ -64,5 +66,10 @@ export const useExpenseStore = create<ExpenseState>((set, get) => ({
   fetchMonthlyTotals: async (months) => {
     const db = await getDb();
     return getMonthlyExpenseTotals(db, months);
+  },
+
+  fetchCategorySpendByMonths: async (months) => {
+    const db = await getDb();
+    return getCategorySpendByMonths(db, months);
   },
 }));

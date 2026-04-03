@@ -26,6 +26,7 @@
     "expo-haptics": "~55.0.9",
     "expo-image": "~55.0.6",
     "expo-linking": "~55.0.9",
+    "expo-print": "~55.0.11",
     "expo-router": "~55.0.8",
     "expo-secure-store": "~55.0.9",
     "expo-sharing": "~55.0.14",

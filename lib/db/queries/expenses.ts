@@ -78,6 +78,25 @@ export async function deleteExpense(db: SQLiteDatabase, id: number): Promise<voi
   await db.runAsync('DELETE FROM expenses WHERE id = ?', [id]);
 }
 
+export async function getCategorySpendByMonths(
+  db: SQLiteDatabase,
+  months: Array<{ month: number; year: number }>,
+): Promise<Array<{ categoryId: number; month: number; year: number; total: number }>> {
+  const results: Array<{ categoryId: number; month: number; year: number; total: number }> = [];
+  for (const { month, year } of months) {
+    const rows = await db.getAllAsync<{ category_id: number; total: number }>(
+      `SELECT category_id, COALESCE(SUM(amount), 0) as total
+       FROM expenses WHERE month = ? AND year = ?
+       GROUP BY category_id`,
+      [month, year],
+    );
+    for (const row of rows) {
+      results.push({ categoryId: row.category_id, month, year, total: row.total });
+    }
+  }
+  return results;
+}
+
 export async function getMonthlyExpenseTotals(
   db: SQLiteDatabase,
   months: Array<{ month: number; year: number }>,
