@@ -114,4 +114,4 @@ export const SQL_INDEXES = [
   `CREATE INDEX IF NOT EXISTS idx_inv_tx_investment   ON investment_transactions(investment_id)`,
 ];
 
-export const CURRENT_SCHEMA_VERSION = 6;
+export const CURRENT_SCHEMA_VERSION = 7;

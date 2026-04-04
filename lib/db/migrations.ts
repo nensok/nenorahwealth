@@ -73,6 +73,13 @@ export async function runMigrations(db: SQLiteDatabase): Promise<void> {
     await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_inv_tx_investment ON investment_transactions(investment_id)`);
   }
 
+  // ── v6 → v7: rename default category "Giving" → "Gift" ───────────────────
+  if (currentVersion < 7) {
+    await db.runAsync(
+      `UPDATE categories SET name = 'Gift' WHERE name = 'Giving' AND is_default = 1`,
+    );
+  }
+
   // Stamp the new version (clear any stale rows first)
   await db.execAsync("DELETE FROM schema_version");
   await db.runAsync(`INSERT INTO schema_version (version) VALUES (?)`, [CURRENT_SCHEMA_VERSION]);

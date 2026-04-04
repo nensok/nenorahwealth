@@ -5,10 +5,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { DateField } from '@/components/ui/date-field';
 import { useColors } from '@/hooks/use-colors';
 import { useRecurringStore } from '@/stores/recurring-store';
 import { useCategoryStore } from '@/stores/category-store';
@@ -150,19 +150,12 @@ export default function AddRecurringScreen() {
           </View>
 
           {/* Start date */}
-          <View>
-            <Text style={[styles.label, { color: colors.muted }]}>First Due Date</Text>
-            <View style={[styles.datePickerWrap, { backgroundColor: colors.surfaceElevated, borderColor: colors.border }]}>
-              <DateTimePicker
-                value={startDate}
-                mode="date"
-                display="default"
-                onChange={(_, d) => { if (d) setStartDate(d); }}
-                minimumDate={new Date()}
-                themeVariant="dark"
-              />
-            </View>
-          </View>
+          <DateField
+            label="First Due Date"
+            value={startDate}
+            onChange={setStartDate}
+            minimumDate={new Date()}
+          />
 
           <Button label={saving ? 'Saving…' : 'Create Recurring'} onPress={handleSave} loading={saving} style={styles.btn} />
         </ScrollView>
@@ -186,6 +179,5 @@ const styles = StyleSheet.create({
   freqRow: { flexDirection: 'row', gap: 8 },
   freqBtn: { flex: 1, alignItems: 'center', paddingVertical: 12, borderRadius: 12, borderWidth: 1 },
   freqText: { fontSize: 13, fontWeight: '600' },
-  datePickerWrap: { borderRadius: 14, borderWidth: 1, overflow: 'hidden', paddingHorizontal: 4 },
   btn: { marginTop: 4 },
 });

@@ -4,11 +4,11 @@ import {
   Pressable, Modal, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { InvestmentForm } from '@/components/forms/investment-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { DateField } from '@/components/ui/date-field';
 import { useColors } from '@/hooks/use-colors';
 import { useInvestmentStore } from '@/stores/investment-store';
 import { useAppStore } from '@/stores/app-store';
@@ -219,17 +219,12 @@ export default function EditInvestmentScreen() {
             <Input label={`Price per unit (${currency})`} value={txPrice} onChangeText={setTxPrice} keyboardType="decimal-pad" placeholder="0.00" />
             <Input label="Notes (optional)" value={txNotes} onChangeText={setTxNotes} placeholder="e.g. market order" />
 
-            <View style={[styles.dateRow, { borderColor: colors.border, backgroundColor: colors.surfaceElevated }]}>
-              <Text style={[styles.dateLabel, { color: colors.muted }]}>Date</Text>
-              <DateTimePicker
-                value={txDate}
-                mode="date"
-                display="default"
-                onChange={(_, d) => { if (d) setTxDate(d); }}
-                maximumDate={new Date()}
-                themeVariant="dark"
-              />
-            </View>
+            <DateField
+              label="Date"
+              value={txDate}
+              onChange={setTxDate}
+              maximumDate={new Date()}
+            />
 
             <View style={styles.sheetActions}>
               <Pressable
@@ -278,8 +273,6 @@ const styles = StyleSheet.create({
   toggle: { flexDirection: 'row', borderRadius: 14, borderWidth: 1, padding: 4, gap: 4 },
   toggleBtn: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 10, borderRadius: 10 },
   toggleText: { fontSize: 14, fontWeight: '600' },
-  dateRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 14, borderWidth: 1, paddingHorizontal: 16, paddingVertical: 4 },
-  dateLabel: { fontSize: 13, fontWeight: '600' },
   sheetActions: { flexDirection: 'row', gap: 12, marginTop: 4 },
   sheetBtn: { flex: 1, paddingVertical: 15, borderRadius: 100, alignItems: 'center', borderWidth: 1 },
   sheetBtnText: { fontSize: 15, fontWeight: '700' },
